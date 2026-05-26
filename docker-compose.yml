@@ -1,0 +1,112 @@
+services:
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: padaria_postgres
+    environment:
+      POSTGRES_USER: padaria_user
+      POSTGRES_PASSWORD: padaria123
+      POSTGRES_DB: padaria_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - padaria_network
+    restart: unless-stopped
+
+  # pgAdmin - Interface visual do banco de dados
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: padaria_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@padaria.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - padaria_network
+    restart: unless-stopped
+
+  # Backend - Node.js (Microsserviço de Produtos)
+  backend-produtos:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: padaria_backend_produtos
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: padaria_user
+      DB_PASSWORD: padaria123
+      DB_NAME: padaria_db
+      SERVICE_NAME: produtos
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - padaria_network
+    restart: unless-stopped
+
+  # Backend - Node.js (Microsserviço de Pedidos)
+  backend-pedidos:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: padaria_backend_pedidos
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: padaria_user
+      DB_PASSWORD: padaria123
+      DB_NAME: padaria_db
+      SERVICE_NAME: pedidos
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - padaria_network
+    restart: unless-stopped
+
+  # Frontend - React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: padaria_frontend
+    environment:
+      REACT_APP_API_PRODUTOS: http://localhost:3001/api
+      REACT_APP_API_PEDIDOS: http://localhost:3002/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-produtos
+      - backend-pedidos
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - padaria_network
+    restart: unless-stopped
+
+networks:
+  padaria_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
