@@ -92,6 +92,8 @@ services:
     environment:
       REACT_APP_API_PRODUTOS: http://localhost:3001/api
       REACT_APP_API_PEDIDOS: http://localhost:3002/api
+      CHOKIDAR_USEPOLLING: "true"      
+      WATCHPACK_POLLING: "true"         
     ports:
       - "3000:3000"
     depends_on:
