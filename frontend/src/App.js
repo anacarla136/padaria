@@ -1,6 +1,13 @@
-// src/App.js
+// src/App.js — Ctrl+Pão
 import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import {
+  MdDashboard,
+  MdShoppingBag,
+  MdLabel,
+  MdPeople,
+  MdReceiptLong,
+} from 'react-icons/md';
 import './index.css';
 
 import Dashboard from './pages/Dashboard';
@@ -13,26 +20,33 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
-        <h1>🥖 Padaria do Zé</h1>
-        <p>Sistema de Gestão</p>
+         <div className="sidebar-logo-icon">
+          <MdShoppingBag size={28} color="#F5ECD7" />
+        </div>
+        <h1>Ctrl+Pão</h1>
+        <p>Do forno ao caixa, tudo sob controle.</p>
       </div>
       <nav>
         <NavLink to="/" end>
-          <span className="nav-icon">📊</span> Dashboard
+          <MdDashboard size={19} /> Dashboard
         </NavLink>
         <NavLink to="/produtos">
-          <span className="nav-icon">🍞</span> Produtos
+          <MdShoppingBag size={19} /> Produtos
         </NavLink>
         <NavLink to="/categorias">
-          <span className="nav-icon">🏷️</span> Categorias
+          <MdLabel size={19} /> Categorias
         </NavLink>
         <NavLink to="/clientes">
-          <span className="nav-icon">👥</span> Clientes
+          <MdPeople size={19} /> Clientes
         </NavLink>
         <NavLink to="/pedidos">
-          <span className="nav-icon">🛒</span> Pedidos
+          <MdReceiptLong size={19} /> Pedidos
         </NavLink>
       </nav>
+
+      <div className="sidebar-footer">
+        Ctrl+Pão © 2026
+      </div>
     </div>
   );
 }
