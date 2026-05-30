@@ -1,10 +1,10 @@
 // src/pages/Produtos.js
 import React, { useEffect, useState } from 'react';
 import { produtosService, categoriasService } from '../services/api';
-import { MdEdit, MdDelete, MdAdd, MdSearch } from 'react-icons/md';
- 
+import { MdEdit, MdDelete, MdAdd, MdSearch, MdShoppingBag } from 'react-icons/md';
+
 const FORM_VAZIO = { nome: '', descricao: '', preco: '', estoque: '', categoria_id: '' };
- 
+
 // Cores para os chips de categoria (vai ciclando)
 const CORES_CATEGORIA = [
   { bg: '#fff0d6', cor: '#7A4A00' },
@@ -14,12 +14,12 @@ const CORES_CATEGORIA = [
   { bg: '#d4edff', cor: '#0a4a7a' },
   { bg: '#f8d7da', cor: '#842029' },
 ];
- 
+
 function getCor(categoriaId) {
   const idx = (Number(categoriaId) - 1) % CORES_CATEGORIA.length;
   return CORES_CATEGORIA[idx >= 0 ? idx : 0];
 }
- 
+
 export default function Produtos() {
   const [produtos, setProdutos]     = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -29,7 +29,7 @@ export default function Produtos() {
   const [editandoId, setEditandoId] = useState(null);
   const [mensagem, setMensagem]     = useState(null);
   const [busca, setBusca]           = useState('');
- 
+
   const carregar = async (filtro = '') => {
     try {
       const [rProd, rCat] = await Promise.all([
@@ -42,15 +42,15 @@ export default function Produtos() {
       setLoading(false);
     }
   };
- 
+
   useEffect(() => { carregar(); }, []);
- 
+
   // Busca com pequeno delay para não chamar a API a cada letra
   useEffect(() => {
     const timer = setTimeout(() => carregar(busca), 350);
     return () => clearTimeout(timer);
   }, [busca]);
- 
+
   const abrirModal = (produto = null) => {
     if (produto) {
       setForm({
@@ -67,9 +67,9 @@ export default function Produtos() {
     }
     setModal(true);
   };
- 
+
   const fecharModal = () => { setModal(false); setForm(FORM_VAZIO); setEditandoId(null); };
- 
+
   const salvar = async () => {
     try {
       if (editandoId) {
@@ -85,7 +85,7 @@ export default function Produtos() {
       exibirMensagem('Erro ao salvar produto.', 'danger');
     }
   };
- 
+
   const deletar = async (id) => {
     if (!window.confirm('Deseja desativar este produto?')) return;
     try {
@@ -96,20 +96,22 @@ export default function Produtos() {
       exibirMensagem('Erro ao desativar produto.', 'danger');
     }
   };
- 
+
   const exibirMensagem = (texto, tipo) => {
     setMensagem({ texto, tipo });
     setTimeout(() => setMensagem(null), 3000);
   };
- 
+
   if (loading) return <div className="loading">Carregando produtos...</div>;
- 
+
   return (
     <div>
       {/* Cabeçalho */}
       <div className="page-header">
         <div>
-          <h2>Produtos</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <MdShoppingBag size={26} color="#C47C2B" /> Produtos
+            </h2>
           <p>{produtos.length} produto{produtos.length !== 1 ? 's' : ''} encontrado{produtos.length !== 1 ? 's' : ''}</p>
         </div>
         <button className="btn btn-primary" onClick={() => abrirModal()}>
@@ -117,7 +119,7 @@ export default function Produtos() {
           Novo Produto
         </button>
       </div>
- 
+
       {/* Busca */}
       <div style={{ position: 'relative', marginBottom: 20, maxWidth: 340 }}>
         <MdSearch size={18} style={{
@@ -137,9 +139,9 @@ export default function Produtos() {
           }}
         />
       </div>
- 
+
       {mensagem && <div className={`alert alert-${mensagem.tipo}`}>{mensagem.texto}</div>}
- 
+
       {/* Grid de produtos */}
       {produtos.length === 0 ? (
         <div className="empty-state">
@@ -152,7 +154,7 @@ export default function Produtos() {
             const estoqueBaixo = p.estoque != null && p.estoque <= 5;
             return (
               <div className="produto-card" key={p.id}>
- 
+
                 {/* Tag de categoria */}
                 {p.categoria_nome && (
                   <span style={{
@@ -165,17 +167,17 @@ export default function Produtos() {
                     {p.categoria_nome}
                   </span>
                 )}
- 
+
                 <h4 style={{ marginBottom: 6 }}>{p.nome}</h4>
- 
+
                 {p.descricao && (
                   <p style={{ fontSize: '0.78rem', color: '#7A5C3E', marginBottom: 8, lineHeight: 1.5 }}>
                     {p.descricao}
                   </p>
                 )}
- 
+
                 <div className="preco">R$ {Number(p.preco).toFixed(2)}</div>
- 
+
                 {/* Estoque com alerta se baixo */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
                   <span className="estoque">Estoque: {p.estoque} unid.</span>
@@ -189,7 +191,7 @@ export default function Produtos() {
                     </span>
                   )}
                 </div>
- 
+
                 {/* Botões */}
                 <div className="produto-actions" style={{ marginTop: 14 }}>
                   <button
@@ -212,7 +214,7 @@ export default function Produtos() {
           })}
         </div>
       )}
- 
+
       {/* Modal */}
       {modal && (
         <div className="modal-overlay" onClick={fecharModal}>
@@ -253,4 +255,3 @@ export default function Produtos() {
     </div>
   );
 }
- 
