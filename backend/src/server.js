@@ -42,8 +42,10 @@ app.get('/health', (req, res) => {
 if (SERVICE_NAME === 'produtos') {
   const produtosRoutes = require('./routes/produtos.routes');
   const categoriasRoutes = require('./routes/categorias.routes');
+  const funcionariosRoutes = require('./routes/funcionarios.routes');
   app.use('/api/produtos', produtosRoutes);
   app.use('/api/categorias', categoriasRoutes);
+  app.use('/api/funcionarios',  funcionariosRoutes);
 }
 
 if (SERVICE_NAME === 'pedidos') {

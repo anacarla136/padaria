@@ -110,3 +110,22 @@ INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario) VAL
 -- - estoque_movimentacoes
 -- - promoções
 -- ============================================
+
+-- Tabela de Funcionários (adicionada pelos alunos)
+CREATE TABLE IF NOT EXISTS funcionarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(200) NOT NULL,
+    email VARCHAR(200) UNIQUE NOT NULL,
+    telefone VARCHAR(20),
+    cargo VARCHAR(100) NOT NULL,
+    salario NUMERIC(10,2),
+    data_admissao DATE,
+    ativo BOOLEAN DEFAULT TRUE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ 
+INSERT INTO funcionarios (nome, email, telefone, cargo, salario, data_admissao) VALUES
+    ('Ana Paula Lima',    'ana@ctrlpao.com',    '83 99999-1111', 'Gerente',   3500.00, '2026-01-10'),
+    ('Pedro Henrique',    'pedro@ctrlpao.com',  '83 98888-2222', 'Padeiro',   2200.00, '2026-03-15'),
+    ('Fernanda Castro',   'fernanda@ctrlpao.com','83 97777-3333', 'Atendente', 1800.00, '2026-06-01');

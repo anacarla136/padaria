@@ -15,6 +15,7 @@ import Produtos from './pages/Produtos';
 import Categorias from './pages/Categorias';
 import Clientes from './pages/Clientes';
 import Pedidos from './pages/Pedidos';
+import Funcionarios from './pages/Funcionarios';
 
 function Sidebar() {
   return (
@@ -42,6 +43,9 @@ function Sidebar() {
         <NavLink to="/pedidos">
           <MdReceiptLong size={19} /> Pedidos
         </NavLink>
+        <NavLink to="/funcionarios">
+          <MdPeople size={19} /> Funcionários
+        </NavLink>
       </nav>
 
       <div className="sidebar-footer">
@@ -63,6 +67,7 @@ function App() {
             <Route path="/categorias" element={<Categorias />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/pedidos" element={<Pedidos />} />
+            <Route path="/funcionarios" element={<Funcionarios />} />
           </Routes>
         </main>
       </div>

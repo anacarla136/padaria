@@ -26,6 +26,15 @@ export const categoriasService = {
   criar: (dados) => apiProdutos.post('/categorias', dados),
 };
 
+// ==================== FUNCIONÁRIOS ====================
+export const funcionariosService = {
+  listar: (params) => apiProdutos.get('/funcionarios', { params }),
+  buscarPorId: (id) => apiProdutos.get(`/funcionarios/${id}`),
+  criar: (dados)  => apiProdutos.post('/funcionarios', dados),
+  atualizar: (id, dados) => apiProdutos.put(`/funcionarios/${id}`, dados),
+  deletar: (id) => apiProdutos.delete(`/funcionarios/${id}`),
+};
+
 // ==================== CLIENTES ====================
 export const clientesService = {
   listar: () => apiPedidos.get('/clientes'),
