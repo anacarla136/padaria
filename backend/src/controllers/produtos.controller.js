@@ -7,7 +7,7 @@ const db = require('../config/database');
 // GET /api/produtos - Lista todos os produtos
 const listarProdutos = async (req, res) => {
   try {
-    const { categoria_id, ativo, busca } = req.query;
+    const { categoria_id, ativo, busca, pagina = 1, limite = 8 } = req.query;
 
     let query = `
       SELECT p.*, c.nome AS categoria_nome
@@ -34,10 +34,24 @@ const listarProdutos = async (req, res) => {
 
     query += ' ORDER BY p.nome ASC';
 
+    // Paginação
+    const countResult = await db.query(
+      `SELECT COUNT(*) FROM produtos p LEFT JOIN categorias c ON p.categoria_id = c.id WHERE 1=1`,
+      []
+    );
+    const total = parseInt(countResult.rows[0].count);
+
+    const offset = (parseInt(pagina) - 1) * parseInt(limite);
+    params.push(parseInt(limite));
+    params.push(offset);
+    query += ` LIMIT $${params.length - 1} OFFSET $${params.length}`;
+
     const resultado = await db.query(query, params);
     res.json({
       sucesso: true,
-      total: resultado.rows.length,
+      total,
+      pagina: parseInt(pagina),
+      totalPaginas: Math.ceil(total / parseInt(limite)),
       dados: resultado.rows,
     });
   } catch (erro) {

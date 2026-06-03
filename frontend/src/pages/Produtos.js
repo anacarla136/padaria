@@ -1,7 +1,7 @@
 // src/pages/Produtos.js
 import React, { useEffect, useState } from 'react';
 import { produtosService, categoriasService } from '../services/api';
-import { MdEdit, MdDelete, MdAdd, MdSearch, MdShoppingBag } from 'react-icons/md';
+import { MdEdit, MdDelete, MdAdd, MdSearch, MdShoppingBag, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 
 const FORM_VAZIO = { nome: '', descricao: '', preco: '', estoque: '', categoria_id: '' };
 
@@ -29,14 +29,19 @@ export default function Produtos() {
   const [editandoId, setEditandoId] = useState(null);
   const [mensagem, setMensagem]     = useState(null);
   const [busca, setBusca]           = useState('');
+  const [pagina, setPagina]         = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [total, setTotal]               = useState(0);
 
-  const carregar = async (filtro = '') => {
+  const carregar = async (filtro = '', paginaAtual = 1) => {
     try {
       const [rProd, rCat] = await Promise.all([
-        produtosService.listar({ ativo: true, busca: filtro || undefined }),
+        produtosService.listar({ ativo: true, busca: filtro || undefined, pagina: paginaAtual, limite: 8 }),
         categoriasService.listar(),
       ]);
       setProdutos(rProd.data.dados || []);
+      setTotal(rProd.data.total || 0);
+      setTotalPaginas(rProd.data.totalPaginas || 1);
       setCategorias(rCat.data.dados || []);
     } finally {
       setLoading(false);
@@ -47,9 +52,18 @@ export default function Produtos() {
 
   // Busca com pequeno delay para não chamar a API a cada letra
   useEffect(() => {
-    const timer = setTimeout(() => carregar(busca), 350);
+    const timer = setTimeout(() => {
+    setPagina(1);
+    carregar(busca, 1);
+  }, 350);
     return () => clearTimeout(timer);
   }, [busca]);
+
+  const irParaPagina = (nova) => {
+    if (nova < 1 || nova > totalPaginas) return;
+    setPagina(nova);
+    carregar(busca, nova);
+  };
 
   const abrirModal = (produto = null) => {
     if (produto) {
@@ -148,71 +162,115 @@ export default function Produtos() {
           <p>Nenhum produto encontrado</p>
         </div>
       ) : (
-        <div className="produtos-grid">
-          {produtos.map(p => {
-            const cor = getCor(p.categoria_id);
-            const estoqueBaixo = p.estoque != null && p.estoque <= 5;
-            return (
-              <div className="produto-card" key={p.id}>
+        <>
+          <div className="produtos-grid">
+            {produtos.map(p => {
+              const cor = getCor(p.categoria_id);
+              const estoqueBaixo = p.estoque != null && p.estoque <= 5;
+              return (
+                <div className="produto-card" key={p.id}>
 
-                {/* Tag de categoria */}
-                {p.categoria_nome && (
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '3px 10px', borderRadius: 20,
-                    fontSize: '0.72rem', fontWeight: 600,
-                    background: cor.bg, color: cor.cor,
-                    marginBottom: 10,
-                  }}>
-                    {p.categoria_nome}
-                  </span>
-                )}
-
-                <h4 style={{ marginBottom: 6 }}>{p.nome}</h4>
-
-                {p.descricao && (
-                  <p style={{ fontSize: '0.78rem', color: '#7A5C3E', marginBottom: 8, lineHeight: 1.5 }}>
-                    {p.descricao}
-                  </p>
-                )}
-
-                <div className="preco">R$ {Number(p.preco).toFixed(2)}</div>
-
-                {/* Estoque com alerta se baixo */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                  <span className="estoque">Estoque: {p.estoque} unid.</span>
-                  {estoqueBaixo && (
+                  {/* Tag de categoria */}
+                  {p.categoria_nome && (
                     <span style={{
-                      fontSize: '0.68rem', fontWeight: 700, padding: '1px 7px',
-                      borderRadius: 20, background: p.estoque === 0 ? '#f8d7da' : '#fff0d6',
-                      color: p.estoque === 0 ? '#842029' : '#7A4A00',
+                      display: 'inline-block',
+                      padding: '3px 10px', borderRadius: 20,
+                      fontSize: '0.72rem', fontWeight: 600,
+                      background: cor.bg, color: cor.cor,
+                      marginBottom: 10,
                     }}>
-                      {p.estoque === 0 ? 'Sem estoque' : 'Baixo'}
+                      {p.categoria_nome}
                     </span>
                   )}
-                </div>
 
-                {/* Botões */}
-                <div className="produto-actions" style={{ marginTop: 14 }}>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => abrirModal(p)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 5 }}
-                  >
-                    <MdEdit size={15} /> Editar
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => deletar(p.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 5 }}
-                  >
-                    <MdDelete size={15} /> Excluir
-                  </button>
+                  <h4 style={{ marginBottom: 6 }}>{p.nome}</h4>
+
+                  {p.descricao && (
+                    <p style={{ fontSize: '0.78rem', color: '#7A5C3E', marginBottom: 8, lineHeight: 1.5 }}>
+                      {p.descricao}
+                    </p>
+                  )}
+
+                  <div className="preco">R$ {Number(p.preco).toFixed(2)}</div>
+
+                  {/* Estoque com alerta se baixo */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                    <span className="estoque">Estoque: {p.estoque} unid.</span>
+                    {estoqueBaixo && (
+                      <span style={{
+                        fontSize: '0.68rem', fontWeight: 700, padding: '1px 7px',
+                        borderRadius: 20, background: p.estoque === 0 ? '#f8d7da' : '#fff0d6',
+                        color: p.estoque === 0 ? '#842029' : '#7A4A00',
+                      }}>
+                        {p.estoque === 0 ? 'Sem estoque' : 'Baixo'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Botões */}
+                  <div className="produto-actions" style={{ marginTop: 14 }}>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => abrirModal(p)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+                    >
+                      <MdEdit size={15} /> Editar
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => deletar(p.id)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+                    >
+                      <MdDelete size={15} /> Excluir
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+
+          {/* Paginação */}
+          {totalPaginas > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 28 }}>
+              <button onClick={() => irParaPagina(pagina - 1)} disabled={pagina === 1}
+                style={{
+                  display: 'flex', alignItems: 'center', padding: '7px 10px',
+                  border: '1px solid var(--border)', borderRadius: 8,
+                  background: pagina === 1 ? 'var(--bg)' : 'var(--bg-card)',
+                  color: pagina === 1 ? '#C0A080' : 'var(--text)',
+                  cursor: pagina === 1 ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Poppins, sans-serif',
+                }}>
+                <MdChevronLeft size={18} />
+              </button>
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
+                <button key={n} onClick={() => irParaPagina(n)}
+                  style={{
+                    width: 36, height: 36, borderRadius: 8, border: '1px solid',
+                    borderColor: pagina === n ? 'var(--primary)' : 'var(--border)',
+                    background: pagina === n ? 'var(--primary)' : 'var(--bg-card)',
+                    color: pagina === n ? '#fff' : 'var(--text)',
+                    fontWeight: pagina === n ? 600 : 400,
+                    cursor: 'pointer', fontSize: '0.85rem',
+                    fontFamily: 'Poppins, sans-serif',
+                  }}>
+                  {n}
+                </button>
+              ))}
+              <button onClick={() => irParaPagina(pagina + 1)} disabled={pagina === totalPaginas}
+                style={{
+                  display: 'flex', alignItems: 'center', padding: '7px 10px',
+                  border: '1px solid var(--border)', borderRadius: 8,
+                  background: pagina === totalPaginas ? 'var(--bg)' : 'var(--bg-card)',
+                  color: pagina === totalPaginas ? '#C0A080' : 'var(--text)',
+                  cursor: pagina === totalPaginas ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Poppins, sans-serif',
+                }}>
+                <MdChevronRight size={18} />
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal */}
