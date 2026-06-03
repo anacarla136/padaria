@@ -128,4 +128,24 @@ CREATE TABLE IF NOT EXISTS funcionarios (
 INSERT INTO funcionarios (nome, email, telefone, cargo, salario, data_admissao) VALUES
     ('Ana Paula Lima',    'ana@ctrlpao.com',    '83 99999-1111', 'Gerente',   3500.00, '2026-01-10'),
     ('Pedro Henrique',    'pedro@ctrlpao.com',  '83 98888-2222', 'Padeiro',   2200.00, '2026-03-15'),
-    ('Fernanda Castro',   'fernanda@ctrlpao.com','83 97777-3333', 'Atendente', 1800.00, '2026-06-01');
+    ('Fernanda Castro',   'fernanda@ctrlpao.com','83 97777-3333', 'Atendente', 1800.00, '2026-06-01'),
+    ('Lucas Mendonça',  'lucas@ctrlpao.com',  '83 96666-4444', 'Confeiteiro', 2400.00, '2024-01-20'),
+    ('Beatriz Santos',  'beatriz@ctrlpao.com', '83 95555-5555', 'Caixa',       1900.00, '2024-08-10');
+
+-- Tabela de Fornecedores
+CREATE TABLE IF NOT EXISTS fornecedores (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(200) NOT NULL,
+    contato VARCHAR(200),
+    telefone VARCHAR(20),
+    email VARCHAR(200),
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Relacionamento com produtos
+ALTER TABLE produtos ADD COLUMN IF NOT EXISTS fornecedor_id INTEGER REFERENCES fornecedores(id);
+
+INSERT INTO fornecedores (nome, contato, telefone, email) VALUES
+    ('Moinho do Norte',     'Carlos',  '63 99111-2222', 'moinho@norte.com'),
+    ('Laticínios Serrano',  'Fernanda','63 98222-3333', 'serrano@laticinios.com'),
+    ('Doces & Cia',         'Ricardo', '63 97333-4444', 'contato@docesecia.com');
