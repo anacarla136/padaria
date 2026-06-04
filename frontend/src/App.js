@@ -2,11 +2,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import {
-  MdDashboard,
-  MdShoppingBag,
-  MdLabel,
-  MdPeople,
-  MdReceiptLong,
+  MdDashboard, MdShoppingBag, MdLabel,
+  MdPeople, MdReceiptLong, MdBadge, MdBarChart,
 } from 'react-icons/md';
 import './index.css';
 
@@ -16,6 +13,7 @@ import Categorias from './pages/Categorias';
 import Clientes from './pages/Clientes';
 import Pedidos from './pages/Pedidos';
 import Funcionarios from './pages/Funcionarios';
+import Relatorio    from './pages/Relatorio';
 
 function Sidebar() {
   return (
@@ -46,6 +44,9 @@ function Sidebar() {
         <NavLink to="/funcionarios">
           <MdPeople size={19} /> Funcionários
         </NavLink>
+        <NavLink to="/relatorio">
+          <MdBarChart size={19} /> Relatório
+        </NavLink>
       </nav>
 
       <div className="sidebar-footer">
@@ -68,6 +69,7 @@ function App() {
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/pedidos" element={<Pedidos />} />
             <Route path="/funcionarios" element={<Funcionarios />} />
+            <Route path="/relatorio"     element={<Relatorio />}    />
           </Routes>
         </main>
       </div>
