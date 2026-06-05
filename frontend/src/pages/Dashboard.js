@@ -86,7 +86,7 @@ export default function Dashboard() {
 
         setEstoqueBaixo(
           produtos
-            .filter(p => p.estoque_quantidade != null && p.estoque_quantidade <= 5)
+            .filter(p => p.estoque != null && p.estoque <= 5)
             .sort((a, b) => a.estoque_quantidade - b.estoque_quantidade)
             .slice(0, 6)
         );
@@ -161,12 +161,12 @@ export default function Dashboard() {
                 <div key={p.id} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '9px 13px', borderRadius: 8,
-                  background: p.estoque_quantidade === 0 ? '#f8d7da' : '#fff0d6',
-                  border: `1px solid ${p.estoque_quantidade === 0 ? '#f1aeb5' : '#f0d0a0'}`,
+                  background: p.estoque === 0 ? '#f8d7da' : '#fff0d6',
+                  border: `1px solid ${p.estoque === 0 ? '#f1aeb5' : '#f0d0a0'}`,
                 }}>
                   <span style={{ fontWeight: 500, fontSize: '0.85rem', color: '#2C1A0E' }}>{p.nome}</span>
-                  <span style={{ fontWeight: 700, fontSize: '0.82rem', color: p.estoque_quantidade === 0 ? '#842029' : '#7A4A00' }}>
-                    {p.estoque_quantidade === 0 ? 'Sem estoque' : `${p.estoque_quantidade} un.`}
+                  <span style={{ fontWeight: 700, fontSize: '0.82rem', color: p.estoque === 0 ? '#842029' : '#7A4A00' }}>
+                    {p.estoque === 0 ? 'Sem estoque' : `${p.estoque} un.`}
                   </span>
                 </div>
               ))}

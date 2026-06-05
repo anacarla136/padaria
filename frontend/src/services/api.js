@@ -48,5 +48,6 @@ export const pedidosService = {
   listar: (params) => apiPedidos.get('/pedidos', { params }),
   buscarPorId: (id) => apiPedidos.get(`/pedidos/${id}`),
   criar: (dados) => apiPedidos.post('/pedidos', dados),
+  relatorio:        (de, ate)  => apiPedidos.get('/pedidos/relatorio', { params: { de, ate } }),
   atualizarStatus: (id, status) => apiPedidos.patch(`/pedidos/${id}/status`, { status }),
 };

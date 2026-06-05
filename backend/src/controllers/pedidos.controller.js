@@ -27,6 +27,49 @@ const listarPedidos = async (req, res) => {
   }
 };
 
+// GET /api/pedidos/relatorio?de=2024-01-01&ate=2024-12-31
+const relatorioPedidos = async (req, res) => {
+  try {
+    const { de, ate } = req.query;
+ 
+    if (!de || !ate) {
+      return res.status(400).json({ sucesso: false, mensagem: 'Informe as datas de início e fim' });
+    }
+ 
+    const resultado = await db.query(
+      `SELECT p.*, c.nome AS cliente_nome
+       FROM pedidos p
+       LEFT JOIN clientes c ON p.cliente_id = c.id
+       WHERE p.criado_em >= $1 AND p.criado_em <= $2::date + interval '1 day'
+       ORDER BY p.criado_em DESC`,
+      [de, ate]
+    );
+ 
+    const pedidos = resultado.rows;
+    const totalArrecadado = pedidos
+      .filter(p => p.status !== 'cancelado')
+      .reduce((acc, p) => acc + Number(p.total), 0);
+ 
+    const porStatus = {};
+    pedidos.forEach(p => {
+      porStatus[p.status] = (porStatus[p.status] || 0) + 1;
+    });
+ 
+    res.json({
+      sucesso: true,
+      resumo: {
+        totalPedidos: pedidos.length,
+        totalArrecadado,
+        porStatus,
+      },
+      dados: pedidos,
+    });
+  } catch (erro) {
+    res.status(500).json({ sucesso: false, mensagem: erro.message });
+  }
+};
+ 
+
 // GET /api/pedidos/:id - Detalhes de um pedido com itens
 const buscarPedidoPorId = async (req, res) => {
   try {
@@ -142,4 +185,4 @@ const atualizarStatusPedido = async (req, res) => {
   }
 };
 
-module.exports = { listarPedidos, buscarPedidoPorId, criarPedido, atualizarStatusPedido };
+module.exports = { listarPedidos, relatorioPedidos, buscarPedidoPorId, criarPedido, atualizarStatusPedido };
