@@ -1,6 +1,5 @@
 // src/controllers/auth.controller.js
 const pool = require('../config/database');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ctrlpao_secret_2024';
@@ -14,19 +13,13 @@ const login = async (req, res) => {
 
   try {
     const resultado = await pool.query(
-      'SELECT * FROM usuarios WHERE email = $1',
-      [email]
+      'SELECT * FROM usuarios WHERE email = $1 AND senha_texto = $2',
+      [email, senha]
     );
 
     const usuario = resultado.rows[0];
 
     if (!usuario) {
-      return res.status(401).json({ erro: 'Email ou senha inválidos.' });
-    }
-
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
-
-    if (!senhaCorreta) {
       return res.status(401).json({ erro: 'Email ou senha inválidos.' });
     }
 
