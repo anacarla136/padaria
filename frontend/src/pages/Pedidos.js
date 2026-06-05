@@ -45,7 +45,7 @@ export default function Pedidos() {
       const [rPed, rCli, rProd] = await Promise.all([
         pedidosService.listar(),
         clientesService.listar(),
-        produtosService.listar({ ativo: true }),
+        produtosService.listar({ ativo: true, limite: 100  }),
       ]);
       setPedidos(rPed.data.dados || []);
       setClientes(rCli.data.dados || []);
