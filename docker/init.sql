@@ -149,3 +149,19 @@ INSERT INTO fornecedores (nome, contato, telefone, email) VALUES
     ('Moinho do Norte',     'Carlos',  '63 99111-2222', 'moinho@norte.com'),
     ('Laticínios Serrano',  'Fernanda','63 98222-3333', 'serrano@laticinios.com'),
     ('Doces & Cia',         'Ricardo', '63 97333-4444', 'contato@docesecia.com');
+
+-- Tabela de usuários (LOGIN)
+CREATE TABLE IF NOT EXISTS usuarios (
+    id         SERIAL PRIMARY KEY,
+    nome       VARCHAR(200) NOT NULL,
+    email      VARCHAR(200) UNIQUE NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    criado_em  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Usuário padrão: admin@ctrlpao.com / admin123
+INSERT INTO usuarios (nome, email, senha_hash) VALUES (
+    'Administrador',
+    'admin@ctrlpao.com',
+    '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy'
+);

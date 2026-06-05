@@ -28,6 +28,9 @@ app.use((req, res, next) => {
 // ROTAS DO MICROSSERVIÇO
 // ============================================
 
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
+
 // Rota de health check - essencial em microsserviços
 app.get('/health', (req, res) => {
   res.json({

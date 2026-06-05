@@ -1,5 +1,5 @@
 // src/App.js — Ctrl+Pão
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import {
   MdDashboard,
@@ -10,6 +10,7 @@ import {
 } from 'react-icons/md';
 import './index.css';
 
+import Login from './pages/Login'; 
 import Dashboard from './pages/Dashboard';
 import Produtos from './pages/Produtos';
 import Categorias from './pages/Categorias';
@@ -56,6 +57,10 @@ function Sidebar() {
 }
 
 function App() {
+  const [usuario, setUsuario] = useState(null);
+
+  if (!usuario) return <Login onLogin={setUsuario} />;
+
   return (
     <BrowserRouter>
       <div className="app-layout">
